@@ -1,0 +1,15 @@
+﻿Outlook;Temperature;Humidity;Windy;Play
+Sunny;Hot;High;F;No
+Sunny;Hot;High;T;No
+Overcast;Hot;High;F;Yes
+Rainy;Mild;High;F;Yes
+Rainy;Cool;Normal;F;Yes
+Rainy;Cool;Normal;T;No
+Overcast;Cool;Normal;T;Yes
+Sunny;Mild;High;F;No
+Sunny;Cool;Normal;F;Yes
+Rainy;Mild;Normal;F;Yes
+Sunny;Mild;Normal;T;Yes
+Overcast;Mild;High;T;Yes
+Overcast;Hot;Normal;F;Yes
+Rainy;Mild;High;T;No
