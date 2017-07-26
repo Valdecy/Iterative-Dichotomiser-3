@@ -66,7 +66,7 @@ def dt_id3(Xdata, ydata):
             if gain[0, fill] != -1.0:
                 gain[0, fill] = entropy
         for element in range(1, branch[i].shape[1]):
-            if len(np.unique(branch[i][0])) == 1:
+            if len(np.unique(branch[i][0])) == 1 or len(branch[i]) == 1 or gain.sum(axis=1) - gain[0,0] == -(gain.shape[1] - 1):
                  rule[i] = rule[i] + " THEN " + name + " = " + branch[i].iloc[0, 0] + "."
                  rule[i] = rule[i].replace(" AND  THEN ", " THEN ")
                  #i = i + 1
