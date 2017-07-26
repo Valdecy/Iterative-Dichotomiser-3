@@ -75,14 +75,15 @@ Predict <- function(tree, features) {
 ############### End of Function ##############
 
 ######################## Part 2 - Usage ####################################
+
 # For the following implementation, the attributes are in columns 1 to n-1,
 # whereas the target is in the last column.
 
-my_data <- as.data.frame(Python_DM_Classification_01_ID3a)
+my_data <- as.data.frame(Python_DM_Classification_01_ID3)
 
 tree <- Node$new("Dataset")
 TrainID3(tree, my_data)
 print(tree, "feature", "obsCount")
 
-Predict(tree, c(Outlook = 'Rainy', Temperature = 'Hot', Humidity = 'High', Windy = 'Strong'))
+Predict(tree, c(Outlook = 'Rainy', Temperature = 'Hot', Humidity = 'High', Windy = 'True'))
 
