@@ -7,7 +7,8 @@
 # Lesson: Decision Trees - ID3
 
 # Citation: 
-# PEREIRA, V. (2018). Project: ID3, File: Python-DM-Classification-01-ID3.py, GitHub repository: <https://github.com/Valdecy/Iterative-Dichotomiser-3>
+# PEREIRA, V. (2018). Project: ID3, File: Python-DM-Classification-01-ID3.py, GitHub repository: 
+# <https://github.com/Valdecy/Iterative-Dichotomiser-3>
 
 ############################################################################
 
