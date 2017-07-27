@@ -91,7 +91,7 @@ def dt_id3(Xdata, ydata):
         i = i + 1
         stop = len(rule)
     
-    rule.append("IF No Rule Apply THEN " + name + " = " + dataset.agg(lambda x:x.value_counts().index[0])[0] + ".")
+    rule.append("IF No Other Rule Applies THEN " + name + " = " + dataset.agg(lambda x:x.value_counts().index[0])[0] + ".")
     for i in range(len(rule) - 1, -1, -1):
         if rule[i].endswith(".") == False:
             del rule[i]
