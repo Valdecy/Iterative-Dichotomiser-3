@@ -67,7 +67,6 @@ def dt_id3(Xdata, ydata):
                  rule[i] = rule[i].replace(" AND  THEN ", " THEN ")
                  skip_update = True
                  break
-            #if gain[0, element] != -1.0:
             for word in range(0, len(uniqueWords[element])):
                 denominator_2 = (branch[i][(branch[i].iloc[:, element] == uniqueWords[element][word])].count())[0]
                 for lbl in range(0, label.shape[1]):
@@ -111,4 +110,3 @@ y = df.iloc[:, 4]   # Target
 dt_id3(Xdata = X, ydata = y)
 
 ########################## End of Code #####################################
-
