@@ -79,7 +79,6 @@ def dt_id3(Xdata, ydata):
             gain[0,0] = -gain[0,0]
             root_index = np.argmax(gain)
             gain[0,0] = -gain[0,0]
-            gain[0, root_index] = -1.0
             rule[i] = rule[i] + list(branch[i])[root_index]
             
             for word in range(0, len(uniqueWords[root_index])):
