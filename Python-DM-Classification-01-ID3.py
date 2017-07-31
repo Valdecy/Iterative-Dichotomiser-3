@@ -23,6 +23,7 @@ def dt_id3(Xdata, ydata):
     name = ydata.name
     ydata = pd.DataFrame(ydata.values.reshape((ydata.shape[0], 1)))
     dataset = pd.concat([ydata, Xdata], axis = 1)
+    dataset = dataset.applymap(str)
     
     # Preprocessing - Unique Words List
     unique = []
