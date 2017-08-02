@@ -93,12 +93,15 @@ def dt_id3(Xdata, ydata):
                     rule[logic_connection] = rule[logic_connection] + " AND "
         skip_update = False
         i = i + 1
+        print("iteration: ", i)
         stop = len(rule)
     
-    rule.append("IF No Other Rule Applies THEN " + name + " = " + dataset.agg(lambda x:x.value_counts().index[0])[0] + ".")
     for i in range(len(rule) - 1, -1, -1):
         if rule[i].endswith(".") == False:
             del rule[i]
+    
+    rule.append("1) Total Number of Rules: " + str(len(rule)))
+    rule.append("2) When No Rule Applies: " + name + " = " + dataset.agg(lambda x:x.value_counts().index[0])[0]) 
     
     return rule
 
