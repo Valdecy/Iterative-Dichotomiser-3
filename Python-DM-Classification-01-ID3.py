@@ -14,9 +14,22 @@
 # Installing Required Libraries
 import pandas as pd
 import numpy  as np
+from scipy import stats
 
-# Function: dt_id3
-def dt_id3(Xdata, ydata):
+# Function: Performs a Chi_Squared test or Fisher Exact test  
+def chi_squared_test(label_df, feature_df):
+    data = pd.concat([pd.DataFrame(label_df.values.reshape((label_df.shape[0], 1))), feature_df], axis = 1)
+    data.columns=["label", "feature"]
+    contigency_table = pd.crosstab(data.iloc[:,0], data.iloc[:,1], margins = False)
+    m = contigency_table.values.sum()
+    if m <= 10000 and contigency_table.shape == (2,2):
+        p_value = stats.fisher_exact(contigency_table)
+    else:
+        p_value = stats.chi2_contingency(contigency_table, correction = False) # (No Yates' Correction)
+    return p_value[1]
+
+# Function: ID3 Algorithm
+def dt_id3(Xdata, ydata, pre_pruning = "none"):
     
     ################     Part 1 - Preprocessing    #############################
     # Preprocessing - Creating Dataframe
@@ -71,6 +84,12 @@ def dt_id3(Xdata, ydata):
                  rule[i] = rule[i].replace(" AND  THEN ", " THEN ")
                  skip_update = True
                  break
+            if i > 0 and pre_pruning == "chi_2" and chi_squared_test(branch[i].iloc[:, 0], branch[i].iloc[:, element]) > 0.1:
+                 if "." not in rule[i]:
+                     rule[i] = rule[i] + " THEN " + name + " = " + branch[i].agg(lambda x:x.value_counts().index[0])[0] + "."
+                     rule[i] = rule[i].replace(" AND  THEN ", " THEN ")
+                 skip_update = True
+                 continue
             for word in range(0, len(uniqueWords[element])):
                 denominator_2 = (branch[i][(branch[i].iloc[:, element] == uniqueWords[element][word])].count())[0]
                 for lbl in range(0, label.shape[1]):
@@ -101,7 +120,7 @@ def dt_id3(Xdata, ydata):
             del rule[i]
     
     rule.append("1) Total Number of Rules: " + str(len(rule)))
-    rule.append("2) When No Rule Applies: " + name + " = " + dataset.agg(lambda x:x.value_counts().index[0])[0]) 
+    rule.append("2) When No Rule Applies: " + name + " = " + dataset.agg(lambda x:x.value_counts().index[0])[0])   
     
     return rule
 
@@ -109,11 +128,11 @@ def dt_id3(Xdata, ydata):
 
 ######################## Part 4 - Usage ####################################
 
-df = pd.read_csv('Python-DM-Classification-01-ID3.csv', sep = ';')
+df = pd.read_csv('Python-DM-Classification-01-ID3a.csv', sep = ';')
 
-X = df.iloc[:, 0:4] # Attributes
-y = df.iloc[:, 4]   # Target
+X = df.iloc[:, 0:4]
+y = df.iloc[:, 4]
 
-dt_id3(Xdata = X, ydata = y)
+dt_id3(Xdata = X, ydata = y, pre_pruning = "none")
 
 ########################## End of Code #####################################
