@@ -28,6 +28,44 @@ def chi_squared_test(label_df, feature_df):
         p_value = stats.chi2_contingency(contigency_table, correction = False) # (No Yates' Correction)
     return p_value[1]
 
+# Function: Prediction           
+def prediction_dt_id3(dt_model, Xdata):
+    ydata = pd.DataFrame(index=range(0, Xdata.shape[0]), columns=["Target"])
+    data  = pd.concat([ydata, Xdata], axis = 1)
+    rule = []
+    for j in range(0, data.shape[1]):
+        if data.iloc[:,j].dtype == "bool":
+            data.iloc[:,j] = data.iloc[:, j].astype(str)
+    for i in range(0, len(dt_model)):
+        dt_model[i] = dt_model[i].replace("{", "")
+        dt_model[i] = dt_model[i].replace("}", "")
+        dt_model[i] = dt_model[i].replace(".", "")
+        dt_model[i] = dt_model[i].replace("IF ", "")
+        dt_model[i] = dt_model[i].replace("AND", "")
+        dt_model[i] = dt_model[i].replace("THEN", "")
+        dt_model[i] = dt_model[i].replace("=", "")
+    
+    for i in range(0, len(dt_model) -2): 
+        splited_rule = [x for x in dt_model[i].split(" ") if x]
+        rule.append(splited_rule)
+   
+    for i in range(0, Xdata.shape[0]): 
+        for j in range(0, len(rule)):
+            k = 0
+            while k < len(rule[j]) - 2:
+                if (data[rule[j][k]][i] == rule[j][k+1]) == True:
+                    if k == len(rule[j]) - 4:
+                        data.iloc[i,0] = rule[j][len(rule[j]) - 1]
+                else:
+                    k = len(rule[j])
+                k = k + 2
+    
+    for i in range(0, Xdata.shape[0]):
+        if pd.isnull(data.iloc[i,0]):
+            data.iloc[i,0] = dt_model[len(dt_model)-1]
+    
+    return data
+
 # Function: ID3 Algorithm
 def dt_id3(Xdata, ydata, pre_pruning = "none"):
     
@@ -119,8 +157,8 @@ def dt_id3(Xdata, ydata, pre_pruning = "none"):
         if rule[i].endswith(".") == False:
             del rule[i]
     
-    rule.append("1) Total Number of Rules: " + str(len(rule)))
-    rule.append("2) When No Rule Applies: " + name + " = " + dataset.agg(lambda x:x.value_counts().index[0])[0])   
+    rule.append("Total Number of Rules: " + str(len(rule)))
+    rule.append(dataset.agg(lambda x:x.value_counts().index[0])[0])   
     
     return rule
 
@@ -133,6 +171,10 @@ df = pd.read_csv('Python-DM-Classification-01-ID3a.csv', sep = ';')
 X = df.iloc[:, 0:4]
 y = df.iloc[:, 4]
 
-dt_id3(Xdata = X, ydata = y, pre_pruning = "none")
+dt_model = dt_id3(Xdata = X, ydata = y, pre_pruning = "none")
+
+# Prediction
+test = df.iloc[0:2, 0:4]
+prediction_dt_id3(dt_model, test)
 
 ########################## End of Code #####################################
