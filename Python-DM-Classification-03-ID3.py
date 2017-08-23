@@ -166,7 +166,7 @@ def dt_id3(Xdata, ydata, pre_pruning = "none"):
 
 ######################## Part 4 - Usage ####################################
 
-df = pd.read_csv('Python-DM-Classification-01-ID3a.csv', sep = ';')
+df = pd.read_csv('Python-DM-Classification-03-ID3.csv', sep = ';')
 
 X = df.iloc[:, 0:4]
 y = df.iloc[:, 4]
