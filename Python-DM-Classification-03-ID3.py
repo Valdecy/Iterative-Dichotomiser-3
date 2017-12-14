@@ -31,13 +31,14 @@ def chi_squared_test(label_df, feature_df):
     return p_value[1]
 
 # Function: Prediction           
-def prediction_dt_id3(dt_model, Xdata):
+def prediction_dt_id3(model, Xdata):
     ydata = pd.DataFrame(index=range(0, Xdata.shape[0]), columns=["Prediction"])
     data  = pd.concat([ydata, Xdata], axis = 1)
     rule = []
     for j in range(0, data.shape[1]):
         if data.iloc[:,j].dtype == "bool":
             data.iloc[:,j] = data.iloc[:, j].astype(str)
+    dt_model = model[:]
     for i in range(0, len(dt_model)):
         dt_model[i] = dt_model[i].replace("{", "")
         dt_model[i] = dt_model[i].replace("}", "")
@@ -50,17 +51,20 @@ def prediction_dt_id3(dt_model, Xdata):
     for i in range(0, len(dt_model) -2): 
         splited_rule = [x for x in dt_model[i].split(" ") if x]
         rule.append(splited_rule)
-   
+
     for i in range(0, Xdata.shape[0]): 
         for j in range(0, len(rule)):
-            k = 0
-            while k < len(rule[j]) - 2:
-                if (data[rule[j][k]][i] == rule[j][k+1]) == True:
-                    if k == len(rule[j]) - 4:
+            rule_confirmation = len(rule[j])/2 - 1
+            rule_count = 0
+            for k in range(0, len(rule[j]) - 2, 2):
+                if (data[rule[j][k]][i] in rule[j]):
+                    rule_count = rule_count + 1
+                    print("count = ", rule_count, " confirmation = ", rule_confirmation)
+                    if (rule_count == rule_confirmation):
+                        print(" i = ", i," j = ", j, " k = ", k, "rule = ",  rule[j], " data = ", data[rule[j][k]][i])
                         data.iloc[i,0] = rule[j][len(rule[j]) - 1]
                 else:
                     k = len(rule[j])
-                k = k + 2
     
     for i in range(0, Xdata.shape[0]):
         if pd.isnull(data.iloc[i,0]):
