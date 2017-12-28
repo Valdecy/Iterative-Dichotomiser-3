@@ -15,6 +15,7 @@
 import pandas as pd
 import numpy  as np
 from scipy import stats
+from copy import deepcopy
 
 # Function: Performs a Chi_Squared test or Fisher Exact test  
 def chi_squared_test(label_df, feature_df):
@@ -38,7 +39,7 @@ def prediction_dt_id3(model, Xdata):
     for j in range(0, data.shape[1]):
         if data.iloc[:,j].dtype == "bool":
             data.iloc[:,j] = data.iloc[:, j].astype(str)
-    dt_model = model[:]
+    dt_model = deepcopy(model)
     for i in range(0, len(dt_model)):
         dt_model[i] = dt_model[i].replace("{", "")
         dt_model[i] = dt_model[i].replace("}", "")
@@ -59,7 +60,9 @@ def prediction_dt_id3(model, Xdata):
             for k in range(0, len(rule[j]) - 2, 2):
                 if (data[rule[j][k]][i] in rule[j]):
                     rule_count = rule_count + 1
+                    print("count = ", rule_count, " confirmation = ", rule_confirmation)
                     if (rule_count == rule_confirmation):
+                        print(" i = ", i," j = ", j, " k = ", k, "rule = ",  rule[j], " data = ", data[rule[j][k]][i])
                         data.iloc[i,0] = rule[j][len(rule[j]) - 1]
                 else:
                     k = len(rule[j])
@@ -71,7 +74,7 @@ def prediction_dt_id3(model, Xdata):
     return data
 
 # Function: ID3 Algorithm
-def dt_id3(Xdata, ydata, pre_pruning = "none"):
+def dt_id3(Xdata, ydata, pre_pruning = "none", chi_lim = 0.1):
     
     ################     Part 1 - Preprocessing    #############################
     # Preprocessing - Creating Dataframe
@@ -126,7 +129,7 @@ def dt_id3(Xdata, ydata, pre_pruning = "none"):
                  rule[i] = rule[i].replace(" AND  THEN ", " THEN ")
                  skip_update = True
                  break
-            if i > 0 and pre_pruning == "chi_2" and chi_squared_test(branch[i].iloc[:, 0], branch[i].iloc[:, element]) > 0.1:
+            if i > 0 and pre_pruning == "chi_2" and chi_squared_test(branch[i].iloc[:, 0], branch[i].iloc[:, element]) > chi_lim:
                  if "." not in rule[i]:
                      rule[i] = rule[i] + " THEN " + name + " = " + branch[i].agg(lambda x:x.value_counts().index[0])[0] + "."
                      rule[i] = rule[i].replace(" AND  THEN ", " THEN ")
@@ -162,7 +165,8 @@ def dt_id3(Xdata, ydata, pre_pruning = "none"):
             del rule[i]
     
     rule.append("Total Number of Rules: " + str(len(rule)))
-    rule.append(dataset.agg(lambda x:x.value_counts().index[0])[0])   
+    rule.append(dataset.agg(lambda x:x.value_counts().index[0])[0])
+    print("End of Iterations")
     
     return rule
 
@@ -170,12 +174,12 @@ def dt_id3(Xdata, ydata, pre_pruning = "none"):
 
 ######################## Part 4 - Usage ####################################
 
-df = pd.read_csv('Python-DM-Classification-03-ID3.csv', sep = ';')
+df = pd.read_csv('Python-DM-Classification-03-ID3a.csv', sep = ';')
 
 X = df.iloc[:, 0:4]
 y = df.iloc[:, 4]
 
-dt_model = dt_id3(Xdata = X, ydata = y, pre_pruning = "none")
+dt_model = dt_id3(Xdata = X, ydata = y, pre_pruning = "none", chi_lim = 0.1)
 
 # Prediction
 test = df.iloc[0:2, 0:4]
