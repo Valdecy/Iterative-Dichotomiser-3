@@ -61,9 +61,7 @@ def prediction_dt_id3(model, Xdata):
             for k in range(0, len(rule[j]) - 2, 2):
                 if (data[rule[j][k]][i] in rule[j]):
                     rule_count = rule_count + 1
-                    print("count = ", rule_count, " confirmation = ", rule_confirmation)
                     if (rule_count == rule_confirmation):
-                        print(" i = ", i," j = ", j, " k = ", k, "rule = ",  rule[j], " data = ", data[rule[j][k]][i])
                         data.iloc[i,0] = rule[j][len(rule[j]) - 1]
                 else:
                     k = len(rule[j])
