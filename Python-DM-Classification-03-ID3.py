@@ -36,6 +36,7 @@ def prediction_dt_id3(model, Xdata):
     Xdata = Xdata.reset_index(drop=True)
     ydata = pd.DataFrame(index=range(0, Xdata.shape[0]), columns=["Prediction"])
     data  = pd.concat([ydata, Xdata], axis = 1)
+    data = data.applymap(str)
     rule = []
     for j in range(0, data.shape[1]):
         if data.iloc[:,j].dtype == "bool":
