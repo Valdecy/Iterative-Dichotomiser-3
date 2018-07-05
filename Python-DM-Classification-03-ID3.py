@@ -36,12 +36,25 @@ def prediction_dt_id3(model, Xdata):
     Xdata = Xdata.reset_index(drop=True)
     ydata = pd.DataFrame(index=range(0, Xdata.shape[0]), columns=["Prediction"])
     data  = pd.concat([ydata, Xdata], axis = 1)
-    data = data.applymap(str)
     rule = []
+    
+    # Preprocessing - Boolean Values
     for j in range(0, data.shape[1]):
         if data.iloc[:,j].dtype == "bool":
             data.iloc[:,j] = data.iloc[:, j].astype(str)
+            
+    # Preprocessing - Binary Values
+    for j in range(1, data.shape[1]):
+        if data.iloc[:,j].dropna().value_counts().index.isin([0,1]).all():
+            for i in range(0, data.shape[0]):          
+               if data.iloc[i,j] == 0:
+                   data.iloc[i,j] = "0"
+               else:
+                   data.iloc[i,j] = "1"
+   
+    data = data.applymap(str) 
     dt_model = deepcopy(model)
+    
     for i in range(0, len(dt_model)):
         dt_model[i] = dt_model[i].replace("{", "")
         dt_model[i] = dt_model[i].replace("}", "")
@@ -60,7 +73,7 @@ def prediction_dt_id3(model, Xdata):
             rule_confirmation = len(rule[j])/2 - 1
             rule_count = 0
             for k in range(0, len(rule[j]) - 2, 2):
-                if (data[rule[j][k]][i] in rule[j]):
+                if (data[rule[j][k]][i] in rule[j][k+1]):
                     rule_count = rule_count + 1
                     if (rule_count == rule_confirmation):
                         data.iloc[i,0] = rule[j][len(rule[j]) - 1]
@@ -68,7 +81,7 @@ def prediction_dt_id3(model, Xdata):
                     k = len(rule[j])
     
     for i in range(0, Xdata.shape[0]):
-        if pd.isnull(data.iloc[i,0]):
+        if data.iloc[i,0]== "nan":
             data.iloc[i,0] = dt_model[len(dt_model)-1]
     
     return data
@@ -81,8 +94,23 @@ def dt_id3(Xdata, ydata, pre_pruning = "none", chi_lim = 0.1):
     name = ydata.name
     ydata = pd.DataFrame(ydata.values.reshape((ydata.shape[0], 1)))
     dataset = pd.concat([ydata, Xdata], axis = 1)
-    dataset = dataset.applymap(str)
     
+    # Preprocessing - Boolean Values
+    for j in range(0, dataset.shape[1]):
+        if dataset.iloc[:,j].dtype == "bool":
+            dataset.iloc[:,j] = dataset.iloc[:, j].astype(str)
+    
+    # Preprocessing - Binary Values
+    for j in range(0, dataset.shape[1]):
+        if dataset.iloc[:,j].dropna().value_counts().index.isin([0,1]).all():
+            for i in range(0, dataset.shape[0]):          
+               if dataset.iloc[i,j] == 0:
+                   dataset.iloc[i,j] = "0"
+               else:
+                   dataset.iloc[i,j] = "1"
+   
+    dataset = dataset.applymap(str)
+                   
     # Preprocessing - Unique Words List
     unique = []
     uniqueWords = []
